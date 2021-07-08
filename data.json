@@ -1,0 +1,47 @@
+{
+    "data": {
+        "article_url": "https://old.reddit.com/r/redditdev/comments/5fyjg4/praw_how_to_get_top_rising_and_new_posts_from/",
+        "author": null,
+        "date": "December 01, 2016",
+        "domain": "old.reddit.com",
+        "fragments": [],
+        "html": "<p>Hi, I'm trying to get posts from subreddit. I have tried something like this:</p>\n<p>reddit = praw.Reddit(params...) submissions = reddit.get_subreddit('learnpython').get_hot(limit=5) print([str(x) for x in submissions])</p>\n<p>but I get: Traceback (most recent call last): File &quot;get_data.py&quot;, line 5, in &lt;module&gt; submissions = reddit.get_subreddit('learnpython').get_hot(limit=5) AttributeError: 'Reddit' object has no attribute 'get_subreddit'</p>\n<p>Does anyone know how to fix this?</p>",
+        "id": 18304086,
+        "keywords": "",
+        "language": "en",
+        "meta": {
+            "al:android:package": "com.reddit.frontpage",
+            "al:ios:app_name": "Reddit",
+            "al:ios:app_store_id": "1064216828",
+            "al:ios:url": "reddit://www.reddit.com/r/redditdev/comments/5fyjg4/praw_how_to_get_top_rising_and_new_posts_from/",
+            "description": "Hi, I'm trying to get posts from subreddit. I have tried something like this: reddit = praw.Reddit(params...) submissions =...",
+            "keywords": " reddit, reddit.com, vote, comment, submit ",
+            "msapplication-TileColor": "#ffffff",
+            "msapplication-TileImage": "//www.redditstatic.com/desktop2x/img/favicon/ms-icon-144x144.png",
+            "og": {
+                "og:description": "Hi, I'm trying to get posts from subreddit. I have tried something like this: reddit = praw.Reddit(params...) submissions =...",
+                "og:image": "https://www.redditstatic.com/new-icon.png",
+                "og:site_name": "reddit",
+                "og:title": "[PRAW] How to get top, rising and new posts from subreddit?",
+                "og:ttl": "600"
+            },
+            "referrer": "always",
+            "theme-color": "#ffffff",
+            "title": "[PRAW] How to get top, rising and new posts from subreddit? : redditdev",
+            "twitter": {
+                "twitter:card": "summary",
+                "twitter:site": "@reddit",
+                "twitter:title": "[PRAW] How to get top, rising and new posts from subreddit?"
+            },
+            "viewport": "width=1024"
+        },
+        "read_time": "1 min",
+        "reduction": null,
+        "short_code": "mK5Mne",
+        "site_name": "reddit",
+        "summary_enabled": false,
+        "summary_read_time": null,
+        "title": "[PRAW] How to get top, rising and new posts from subreddit?"
+    },
+    "success": true
+}
