@@ -13,28 +13,27 @@ class Reddit:
         not_supported = ['nytimes.com', 'wsj.com',
                          'redd.it', 'youtube.com', 'youtu.be', 'imgur.com']
         for submission in reddit.subreddit("TESTFORABOT01").stream.submissions():
-            time.sleep(2)
-            if submission.__dict__.get('post_hint', None) == 'link' and submission.archived == 'False':
-                if any([x in submission.url for x in not_supported]):
-                    print("Diese URL wird bei Outline nicht unterstützt" +
-                          ' ' + submission.url + ' ' + submission.id)
-                    currenturl = 'Diese URL wird bei Outline nicht unterstützt'
-                else:
-                    print('URL wird unterstützt' + ' ' + submission.url)
-                    currenturl = self.create_outline_url(
-                        submission.url, submission.title)
+            # time.sleep(2)
+            print(submission.title)
+            if submission.__dict__.get('post_hint', None) == 'link':
+                if submission.archived != True:
+                    if any([x in submission.url for x in not_supported]):
+                        print("Diese URL wird bei Outline nicht unterstützt" +
+                              ' ' + submission.url + ' ' + submission.id)
+                        currenturl = 'Diese URL wird bei Outline nicht unterstützt'
+                    else:
+                        if submission.url in "outline.com":
+                            print("Outline Link")
+                            currenturl = submission.url
+                        else:
+                            print('URL wird unterstützt' + ' ' + submission.url)
+                            currenturl = self.create_outline_url(
+                                submission.url, submission.title)
+                            print(str(submission.title) + ' ' + str(submission.url))
                     print(str(submission.title) + ' ' + str(submission.url))
-                    #      + ' ' + str(currenturl))
-                    # os.system('cls' if os.name == 'nt' else 'clear')
-                    # print(currenturl)
-                    # link = currenturl
-                    # title = submission.title
-                    # self.comment(
-                    #     link, title)
-                print(str(submission.title) + ' ' + str(submission.url))
-                archiveurl = self.create_archive_url(
-                submission.url, submission.title)
-                self.comment(currenturl, archiveurl, submission.id)
+                    archiveurl = self.create_archive_url(
+                    submission.url, submission.title)
+                    self.comment(currenturl, archiveurl, submission.id)
 
     def create_outline_url(self, url, title):
         outline = 'https://outline.com/'
@@ -53,18 +52,24 @@ class Reddit:
         return outlineurl
 
     def create_archive_url(self, url, title):
-        print("Archive.org Link wird erstellt")
-        user_agent = "Mozilla/5.0 (Windows NT 5.1; rv:40.0) Gecko/20100101 Firefox/40.0"
-        wayback = waybackpy.Url(url, user_agent)
-        archive = wayback.save()
-        archiveurl = archive.archive_url
-        print(archiveurl)
-        return archiveurl
+        try:
+            print("Archive.org Link wird erstellt")
+            user_agent = "Mozilla/5.0 (Windows NT 5.1; rv:40.0) Gecko/20100101 Firefox/40.0"
+            wayback = waybackpy.Url(url, user_agent)
+            archive = wayback.save()
+            archiveurl = archive.archive_url
+            print(archiveurl)
+            return archiveurl
+        except Exception as e:
+            print(e)
+            archiveurl = ' dieser Link kann nicht archiviert werden, da er auf eine andere Seite weiterleitet!'
+            return archiveurl
 
     def comment(self, link1, link2, id):
         reply_template = "Dies ist ein Bot für die Erstellung von Outlinelinks " + str(link1) + " und Archive Links" + str(link2)
         submission = reddit.submission(id=id)
         submission.reply(reply_template)
+        print("Kommentar wurde gepostet" + ' ' +  "https://old.reddit.com/r/TESTFORABOT01/comments/" + id)
         # reddit.subreddit("TESTFORABOT01").submit(title, url=link)
 
 
