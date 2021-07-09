@@ -78,12 +78,10 @@ class Reddit:
         """
         try:
             print("Archive.org Link wird erstellt")
-            # user_agent = "Mozilla/5.0 (Windows NT 5.1; rv:40.0) Gecko/20100101 Firefox/40.0"
-            # wayback = waybackpy.Url(url, user_agent)
-            # archive = wayback.save()
-            # archiveurl = archive.archive_url
-            # return archiveurl
-            archiveurl = 'TEST'
+            user_agent = "Mozilla/5.0 (Windows NT 5.1; rv:40.0) Gecko/20100101 Firefox/40.0"
+            wayback = waybackpy.Url(url, user_agent)
+            archive = wayback.save()
+            archiveurl = archive.archive_url
             return archiveurl
         except Exception as e:
             archiveurl = ' dieser Link kann nicht archiviert werden, da er auf eine andere Seite weiterleitet!'
@@ -98,14 +96,7 @@ class Reddit:
             archive ([url]): URL von Archive
             id ([submission.id]): Submission ID um einen Post zu bekommen
         """
-        submissions = reddit.submission(id=id)
-        # for comment in submissions.comments:
-        #     # https://praw.readthedocs.io/en/latest/tutorials/comments.html#extracting-comments-with-praw
-        #     if isinstance(comment, MoreComments):
-        #         continue
-        #     if comment.author == config.botname:
-        #         pass
-        #     else:
+
         create_db(self)
         result = select_db(self, id)
         if result == 1:
@@ -126,6 +117,9 @@ class Reddit:
 
 
 def create_db(self):
+    """[summary]
+    Erstellt DB, wenn sie noch nicht existiert
+    """
     try:
         if os.path.exists("posts.db"):
             print("DB vorhanden")
@@ -140,12 +134,19 @@ def create_db(self):
 
 
 def select_db(self, id):
+    """[summary]
+    Select Submissions aus DB und schaut, ob bereits kommentiert wurde
+    Args:
+        id ([id]): SubmissionID
+
+    Returns:
+        [bool]: Wenn Post bereits kommentiert returne 1 ansonsten 0
+    """
     try:
         connection = sqlite3.connect("posts.db")
         cursor = connection.cursor()
         print(id)
         cursor.execute("SELECT posts from Submissions where posts=?", (id,))
-        # cursor.execute("SELECT * from Submissions")
         result = cursor.fetchone()
         print(result)
         if result:
@@ -159,6 +160,11 @@ def select_db(self, id):
 
 
 def insert_db(self, id):
+    """[summary]
+    Inserted in DB
+    Args:
+        id ([id]): SubmissionID
+    """
     try:
         connection = sqlite3.connect("posts.db")
         cursor = connection.cursor()
