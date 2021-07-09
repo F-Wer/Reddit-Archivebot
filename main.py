@@ -10,6 +10,8 @@ import sqlite3
 import os
 outline = 'https://outline.com/'
 
+"@TODO DB ändern, um Felder ArchiveUrl,OutlineURL und SubmissionURL erweitern und überprüfen ob die Submission.url = DB.Submission.URL ist und dann Kommentar posten ohne auf Outline und Archive zuzugreifen"
+
 
 class Reddit:
 
@@ -26,21 +28,27 @@ class Reddit:
                 time.sleep(2)
                 if submission.__dict__.get('post_hint', None) == 'link':
                     if submission.archived != True:
-                        if any([x in submission.url for x in not_supported]):
-                            print("Diese URL wird bei Outline nicht unterstützt" +
-                                  ' ' + submission.url + ' ' + submission.id)
-                            currenturl = 'Diese URL wird bei Outline nicht unterstützt'
-                        else:
-                            if submission.url in "outline.com":
-                                currenturl = submission.url
-                            else:
-                                print('URL wird unterstützt' +
-                                      ' ' + submission.url)
-                                currenturl = self.create_outline_url(
-                                    submission.url)
-                        archiveurl = self.create_archive_url(
-                            submission.url)
-                        self.comment(currenturl, archiveurl, submission.id)
+                        # Wurde bereits kommentiert?
+                        result = select_db(self, submission.id)
+                        if result == 1:  # Ja, dann tu nichts
+                            pass
+                        if result == 0:  # Nein dann mach weiter
+                            # URL not_supported von outline. benutz archive
+                            if any([x in submission.url for x in not_supported]):
+                                print("Diese URL wird bei Outline nicht unterstützt" +
+                                      ' ' + submission.url + ' ' + submission.id)
+                                currenturl = 'Diese URL wird bei Outline nicht unterstützt'
+                            else:  # Andernfalss benutz outline
+                                if submission.url in "outline.com":
+                                    currenturl = submission.url
+                                else:
+                                    print('URL wird unterstützt' +
+                                          ' ' + submission.url)
+                                    currenturl = self.create_outline_url(
+                                        submission.url)
+                            archiveurl = self.create_archive_url(  # Benutze immer Archive. Egal ob es auch über outline funktionieren würde
+                                submission.url)
+                            self.comment(currenturl, archiveurl, submission.id)
         except Exception as e:
             print(e)
 
@@ -56,12 +64,14 @@ class Reddit:
         """
         try:
             outline_api = "https://api.outline.com/v3/parse_article?source_url="
-            escapedinputurl = urllib.parse.quote_plus(url)
+            escapedinputurl = urllib.parse.quote_plus(
+                url)  # entspricht htmlencode
             response = requests.get(outline_api + escapedinputurl)
             textresponse = json.dumps(
                 response.json(), indent=4, sort_keys=True)
             resp = json.loads(textresponse)  # Beispiel json in data.json
             short_code = (resp['data']['short_code'])
+            # Erstelle URL. Beispiel outline = https://outline.com/ short_code = XF6Fvz
             outlineurl = outline + short_code
             return outlineurl
         except Exception as e:
@@ -98,20 +108,16 @@ class Reddit:
         """
 
         create_db(self)
-        result = select_db(self, id)
-        if result == 1:
-            pass
-        if result == 0:
-            try:
-                insert_db(self, id)
-                reply_template = "Dies ist ein Bot für die Erstellung von Outlinelinks " + \
-                    str(outline) + " und Archive Links " + str(archive)
-                submission = reddit.submission(id=id)
-                submission.reply(reply_template)
-                print("Kommentar wurde gepostet" + ' ' +
-                      "https://old.reddit.com/r/TESTFORABOT01/comments/" + id)
-            except Exception as e:
-                print(e)
+        try:
+            insert_db(self, id)
+            reply_template = "Dies ist ein Bot für die Erstellung von Outlinelinks " + \
+                str(outline) + " und Archive Links " + str(archive)
+            submission = reddit.submission(id=id)
+            submission.reply(reply_template)
+            print("Kommentar wurde gepostet" + ' ' +
+                  "https://old.reddit.com/r/TESTFORABOT01/comments/" + id)
+        except Exception as e:
+            print(e)
         else:
             pass
 
@@ -122,7 +128,7 @@ def create_db(self):
     """
     try:
         if os.path.exists("posts.db"):
-            print("DB vorhanden")
+            pass
         else:
             connection = sqlite3.connect("posts.db")
             cursor = connection.cursor()
@@ -145,10 +151,8 @@ def select_db(self, id):
     try:
         connection = sqlite3.connect("posts.db")
         cursor = connection.cursor()
-        print(id)
         cursor.execute("SELECT posts from Submissions where posts=?", (id,))
         result = cursor.fetchone()
-        print(result)
         if result:
             return 1
         else:
