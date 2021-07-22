@@ -24,15 +24,15 @@ class Reddit:
         try:
             not_supported = ['nytimes.com', 'wsj.com',
                              'redd.it', 'youtube.com', 'youtu.be', 'imgur.com']
-            for submission in reddit.subreddit("TESTFORABOT01").stream.submissions():
+            for submission in reddit.subreddit(config.subreddit).stream.submissions():
                 time.sleep(2)
                 if submission.__dict__.get('post_hint', None) == 'link':
                     if submission.archived != True:
                         # Wurde bereits kommentiert?
                         result = select_db(self, submission.id)
-                        if result == 1:  # Ja, dann tu nichts
+                        if result != 0:  # Ja, dann tu nichts
                             pass
-                        if result == 0:  # Nein dann mach weiter
+                        else:  # Nein dann mach weiter
                             # URL not_supported von outline. benutz archive
                             if any([x in submission.url for x in not_supported]):
                                 print("Diese URL wird bei Outline nicht unterstützt" +
@@ -55,7 +55,6 @@ class Reddit:
     def create_outline_url(self, url):
         """[summary]
         Erstellen von Outline Links über direkten API Zugriff.
-        Dauert <1 Sekunde
         Args:
             url ([url]): Input für die URL um diese an Outline weiterzugeben
 
@@ -115,7 +114,7 @@ class Reddit:
             submission = reddit.submission(id=id)
             submission.reply(reply_template)
             print("Kommentar wurde gepostet" + ' ' +
-                  "https://old.reddit.com/r/TESTFORABOT01/comments/" + id)
+                  "https://old.reddit.com/r/" + config.subreddit + "/comments/" + id)
         except Exception as e:
             print(e)
         else:
@@ -149,6 +148,7 @@ def select_db(self, id):
         [bool]: Wenn Post bereits kommentiert returne 1 ansonsten 0
     """
     try:
+        create_db(self)
         connection = sqlite3.connect("posts.db")
         cursor = connection.cursor()
         cursor.execute("SELECT posts from Submissions where posts=?", (id,))
