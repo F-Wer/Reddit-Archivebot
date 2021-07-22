@@ -17,4 +17,4 @@ There you can obtain the client_id and client_secret and add in the variable use
 pip install requirements.txt
 python main.py 
 ```
-
+The data.json file shows the return of outline.com and doesn't serve any purpose, rather to show the return.
