@@ -1,4 +1,5 @@
 # Reddit Bot for archiving Posts via outline.com and archive.org
+> :warning: Outline.com does no longer work. Therfore this repository is pretty much useless.
 
 I observed that some news outlets are putting some of their posts behind a paywall. Therfore some discussions on reddit will be pretty useless.
 
